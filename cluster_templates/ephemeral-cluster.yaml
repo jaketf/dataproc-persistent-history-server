@@ -1,0 +1,33 @@
+config:
+  configBucket: dataproc-925cb9fb-c058-4ab5-a095-fdb2f7058934-us
+  gceClusterConfig:
+    internalIpOnly: true
+    subnetworkUri: https://www.googleapis.com/compute/v1/projects/${PROJECT}/regions/us-central1/subnetworks/example-net-dataproc-central
+    zoneUri: https://www.googleapis.com/compute/v1/projects/${PROJECT}/zones/us-central1-a
+  masterConfig:
+    diskConfig:
+      bootDiskSizeGb: 500
+      bootDiskType: pd-standard
+    imageUri: https://www.googleapis.com/compute/v1/projects/cloud-dataproc/global/images/dataproc-1-4-deb9-20190131-000000-rc02
+    machineTypeUri: https://www.googleapis.com/compute/v1/projects/${PROJECT}/zones/us-central1-a/machineTypes/n1-standard-2
+    minCpuPlatform: AUTOMATIC
+    numInstances: 1
+  softwareConfig:
+    imageVersion: preview
+    properties:
+      mapred:mapreduce.jobhistory.address: history-server-m:10020
+      mapred:mapreduce.jobhistory.done-dir: gs://${HISTORY_BUCKET}/done-dir
+      mapred:mapreduce.jobhistory.intermediate-done-dir: gs://${HISTORY_BUCKET}/intermediate-done-dir
+      spark:spark.eventLog.dir: gs://${HISTORY_BUCKET}/spark-events/
+      spark:spark.history.fs.logDirectory: gs://${HISTORY_BUCKET}/spark-events/
+      spark:spark.yarn.historyServer.address: history-server-m:18080
+  initializationActions:
+    - executableFile: gs://${HISTORY_BUCKET}/init_actions/disable_history_servers.sh
+  workerConfig:
+    diskConfig:
+      bootDiskSizeGb: 500
+      bootDiskType: pd-standard
+    imageUri: https://www.googleapis.com/compute/v1/projects/cloud-dataproc/global/images/dataproc-1-4-deb9-20190131-000000-rc02
+    machineTypeUri: https://www.googleapis.com/compute/v1/projects/${PROJECT}/zones/us-central1-a/machineTypes/n1-standard-2
+    minCpuPlatform: AUTOMATIC
+    numInstances: 2
