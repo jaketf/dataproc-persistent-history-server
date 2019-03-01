@@ -1,7 +1,3 @@
-parameters:
-- name: WORDCOUNT_OUTPUT_GCS_PATH
-  fields:
-  - jobs['MapReductWordCount'].hadoopJob.args[1]
 jobs:
 - stepId: 'SparkPi'
   sparkJob:
@@ -10,47 +6,41 @@ jobs:
     jarFileUris:
     - 'file:///usr/lib/spark/examples/jars/spark-examples.jar'
     mainClass: 'org.apache.spark.examples.SparkPi'
-- stepId: 'MapReduceWordCount'
+- stepId: 'MapReducePi'
   hadoopJob:
     args:
-    - 'gs://pub/shakespeare/rose.txt'
-    - 'PLACEHOLDER'
-    mainJarFileUri: 'file:///usr/lib/hadoop-op/hadoop-op-examples.jar'
+    - 'pi'
+    - '16'
+    - '1000'
+    mainJarFileUri: 'file:///usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples-2.9.2.jar'
   prerequisiteStepIds:
   - 'SparkPi'
 placement:
   managedCluster:
-    clusterName: 'ephemeral-cluster'    
+    clusterName: 'ephemeral-cluster1'
     config:
-      configBucket: dataproc-925cb9fb-c058-4ab5-a095-fdb2f7058934-us
       gceClusterConfig:
         internalIpOnly: true
-        subnetworkUri: https://www.googleapis.com/compute/v1/projects/${PROJECT}/regions/us-central1/subnetworks/example-net-dataproc-central
-        zoneUri: https://www.googleapis.com/compute/v1/projects/${PROJECT}/zones/us-central1-a
+        subnetworkUri: https://www.googleapis.com/compute/v1/projects/jferriero-dev/regions/us-central1/subnetworks/example-net-dataproc-central
+        zoneUri: https://www.googleapis.com/compute/v1/projects/jferriero-dev/zones/us-central1-a
       masterConfig:
         diskConfig:
           bootDiskSizeGb: 500
           bootDiskType: pd-standard
-        imageUri: https://www.googleapis.com/compute/v1/projects/cloud-dataproc/global/images/dataproc-1-4-deb9-20190131-000000-rc02
-        machineTypeUri: https://www.googleapis.com/compute/v1/projects/${PROJECT}/zones/us-central1-a/machineTypes/n1-standard-2
-        minCpuPlatform: AUTOMATIC
+        machineTypeUri: https://www.googleapis.com/compute/v1/projects/jferriero-dev/zones/us-central1-a/machineTypes/n1-standard-2
         numInstances: 1
       softwareConfig:
         imageVersion: preview
         properties:
           mapred:mapreduce.jobhistory.address: history-server-m:10020
-          mapred:mapreduce.jobhistory.done-dir: gs://${HISTORY_BUCKET}/done-dir
-          mapred:mapreduce.jobhistory.intermediate-done-dir: gs://${HISTORY_BUCKET}/intermediate-done-dir
-          spark:spark.eventLog.dir: gs://${HISTORY_BUCKET}/spark-events/
-          spark:spark.history.fs.logDirectory: gs://${HISTORY_BUCKET}/spark-events/
+          mapred:mapreduce.jobhistory.done-dir: gs://jferriero-dev-history/done-dir
+          mapred:mapreduce.jobhistory.intermediate-done-dir: gs://jferriero-dev-history/intermediate-done-dir
+          spark:spark.eventLog.dir: gs://jferriero-dev-history/spark-events/
+          spark:spark.history.fs.logDirectory: gs://jferriero-dev-history/spark-events/
           spark:spark.yarn.historyServer.address: history-server-m:18080
-      initializationActions:
-        - executableFile: gs://${HISTORY_BUCKET}/init_actions/disable_history_servers.sh
       workerConfig:
         diskConfig:
           bootDiskSizeGb: 500
           bootDiskType: pd-standard
-        imageUri: https://www.googleapis.com/compute/v1/projects/cloud-dataproc/global/images/dataproc-1-4-deb9-20190131-000000-rc02
-        machineTypeUri: https://www.googleapis.com/compute/v1/projects/${PROJECT}/zones/us-central1-a/machineTypes/n1-standard-2
-        minCpuPlatform: AUTOMATIC
+        machineTypeUri: https://www.googleapis.com/compute/v1/projects/jferriero-dev/zones/us-central1-a/machineTypes/n1-standard-2
         numInstances: 2
